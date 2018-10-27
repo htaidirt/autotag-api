@@ -1,0 +1,25 @@
+service: autotag-api
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: prod
+  region: eu-west-1
+
+functions:
+  success:
+    handler: src/hello.success
+    events:
+      - http:
+          path: success
+          method: get
+          cors: true
