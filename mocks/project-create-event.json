@@ -1,0 +1,8 @@
+{
+  "body": "{\"title\":\"Hello World\",\"description\":\"This is a test from the mock\",\"type\":\"IMG-TO-TEXT\",\"status\":\"ACTIVE\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}
