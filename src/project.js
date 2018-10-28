@@ -47,3 +47,20 @@ export async function get(event) {
     return response({ status: false, error }, 500);
   }
 }
+
+export async function list(event) {
+  const params = {
+    TableName: CONST.TABLES.PROJECTS,
+    KeyConditionExpression: 'userId = :userId',
+    ExpressionAttributeValues: {
+      ':userId': event.requestContext.identity.cognitoIdentityId
+    }
+  };
+
+  try {
+    const result = await dynamodb.call('query', params);
+    return response(result.Items, 200);
+  } catch (error) {
+    return response({ status: false, error }, 500);
+  }
+}
