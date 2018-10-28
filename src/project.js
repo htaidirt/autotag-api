@@ -29,3 +29,21 @@ export async function create(event) {
     return response({ status: false, error }, 500);
   }
 }
+
+export async function get(event) {
+  const params = {
+    TableName: CONST.TABLES.PROJECTS,
+    Key: {
+      userId: event.requestContext.identity.cognitoIdentityId,
+      projectId: event.pathParameters.id
+    }
+  };
+
+  try {
+    const result = await dynamodb.call('get', params);
+    if (result.Item) return response(result.Item, 200);
+    return response({ status: false, error: 'Project not found' }, 404);
+  } catch (error) {
+    return response({ status: false, error }, 500);
+  }
+}
