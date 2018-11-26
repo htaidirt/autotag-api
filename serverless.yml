@@ -3,11 +3,21 @@ service: autotag-api
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-localstack
 
 custom:
+  stage: ${opt:stage, 'local'}
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  localstack:
+    host: http://localhost
+    endpoints:
+      S3: http://localhost:4572
+      DynamoDB: http://localhost:4570
+      CloudFormation: http://localhost:4581
+      SQS: http://localhost:4576
+      Lambda: http://localhost:4574
 
 provider:
   name: aws
@@ -24,6 +34,9 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
+
+resources:
+  - ${file(resources/dynamodb-table.yml)}
 
 functions:
   projectCreate:
@@ -52,3 +65,13 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+
+  resourceAdd:
+    handler: src/resource.add
+    events:
+      - s3:
+          bucket: autotag-${opt:stage, 'local'}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+
