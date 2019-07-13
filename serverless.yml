@@ -5,25 +5,12 @@ plugins:
   - serverless-offline
   - serverless-localstack
 
-custom:
-  stage: ${opt:stage, 'local'}
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
-  localstack:
-    host: http://localhost
-    endpoints:
-      S3: http://localhost:4572
-      DynamoDB: http://localhost:4570
-      CloudFormation: http://localhost:4581
-      SQS: http://localhost:4576
-      Lambda: http://localhost:4574
-
 provider:
   name: aws
   runtime: nodejs8.10
   stage: prod
   region: eu-west-1
+  deploymentBucket: autotag-api-deployment-local3
   iamRoleStatements:
     - Effect: Allow
       Resource: 'arn:aws:dynamodb:eu-west-1:*:*'
@@ -35,8 +22,19 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
 
+custom:
+  stage: ${opt:stage, 'local'}
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  localstack:
+    host: http://localhost
+    endpointFile: localstack-endpoints.json
+    stages:
+      - local
+
 resources:
-  - ${file(resources/dynamodb-table.yml)}
+  - ${file(infrastructure/dynamodb-table.yml)}
 
 functions:
   projectCreate:
